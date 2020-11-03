@@ -49,7 +49,6 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
 	FRotator Rotator = GetOwner()->GetActorRotation();
-	UE_LOG(LogTemp, Warning, TEXT("Yaw is %f"), Rotator.Yaw);
 
 	Rotator.Yaw = FMath::FInterpTo(Rotator.Yaw, OpenAngle, DeltaTime, DoorOpenSpeed);
 	GetOwner()->SetActorRelativeRotation(Rotator);
@@ -58,7 +57,6 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
 	FRotator Rotator = GetOwner()->GetActorRotation();
-	UE_LOG(LogTemp, Warning, TEXT("Yaw is %f"), Rotator.Yaw);
 
 	Rotator.Yaw = FMath::FInterpTo(Rotator.Yaw, InitialYaw, DeltaTime, DoorCloseSpeed);
 	GetOwner()->SetActorRelativeRotation(Rotator);
