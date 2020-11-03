@@ -1,6 +1,6 @@
 // Dmitry Tabakerov is learning Unreal Engine 4
 
-
+#include "Components/AudioComponent.h"
 #include "OpenDoor.h"
 
 
@@ -21,7 +21,8 @@ void UOpenDoor::BeginPlay()
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	CurrentYaw = InitialYaw;
 	OpenAngle += InitialYaw;
-
+    FindAudioComponent();
+    
 	if (!PressurePlate) 
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s has the open door component but no pressure plate"), *GetOwner()->GetName());
@@ -50,15 +51,42 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 	FRotator Rotator = GetOwner()->GetActorRotation();
 
 	Rotator.Yaw = FMath::FInterpTo(Rotator.Yaw, OpenAngle, DeltaTime, DoorOpenSpeed);
-	GetOwner()->SetActorRelativeRotation(Rotator);
+	
+    if (Rotator.Yaw == OpenAngle) { return; }
+    
+    GetOwner()->SetActorRelativeRotation(Rotator);
+    
+    if (!AudioComponent) {
+        UE_LOG(LogTemp, Error, TEXT("%s missing AudioComponent!"), *GetOwner()->GetName());
+        return;
+    }
+
+    if (!OpenDoorSound) {
+        AudioComponent->Play();
+        OpenDoorSound = true;
+        CloseDoorSound = false;
+    }
 }
 
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
 	FRotator Rotator = GetOwner()->GetActorRotation();
-
+    
+    if (Rotator.Yaw == InitialYaw) { return; }
+    
 	Rotator.Yaw = FMath::FInterpTo(Rotator.Yaw, InitialYaw, DeltaTime, DoorCloseSpeed);
 	GetOwner()->SetActorRelativeRotation(Rotator);
+    
+    if (!AudioComponent) {
+        UE_LOG(LogTemp, Error, TEXT("%s missing AudioComponent!"), *GetOwner()->GetName());
+        return;
+    }
+
+    if (!CloseDoorSound) {
+        AudioComponent->Play();
+        CloseDoorSound = true;
+        OpenDoorSound = false;
+    }
 }
 
 float UOpenDoor::TotalMassOfActor() const
@@ -79,4 +107,12 @@ float UOpenDoor::TotalMassOfActor() const
     }
         
     return TotalMass;
+}
+
+void UOpenDoor::FindAudioComponent()
+{
+    AudioComponent = GetOwner()->FindComponentByClass<UAudioComponent>();
+    if (!AudioComponent) {
+        UE_LOG(LogTemp, Error, TEXT("%s missing AudioComponent!"), *GetOwner()->GetName());
+    }
 }

@@ -31,6 +31,8 @@ public:
     float TotalMassOfActor() const;
 
 private:
+    bool OpenDoorSound = false;
+    bool CloseDoorSound = true;
 	float CurrentYaw;
 	float InitialYaw;
 	float DoorLastOpened = 0.f;
@@ -52,4 +54,8 @@ private:
 
 	UPROPERTY(EditAnywhere);
 	float DoorCloseSpeed = 2.f;
+    
+    UPROPERTY();
+    UAudioComponent* AudioComponent = nullptr;
+    void FindAudioComponent();
 };
