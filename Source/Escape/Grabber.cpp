@@ -33,8 +33,6 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 }
 
 void UGrabber::Grab() {
-	UE_LOG(LogTemp, Warning, TEXT("Grabbing"));
-    
     FHitResult HitResult = GetFirstPhysicsBodyInReach();
     if (HitResult.GetActor()) {
         UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
@@ -43,7 +41,6 @@ void UGrabber::Grab() {
 }
 
 void UGrabber::Release() {
-    UE_LOG(LogTemp, Warning, TEXT("Releasing!"));
     PhysicsHandle->ReleaseComponent();
 }
 
@@ -62,10 +59,7 @@ void UGrabber::FindInputComponent()
 void UGrabber::FindPhysicsHandle()
 {
     PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-    if (PhysicsHandle) {
-        // NOOP
-    }
-    else {
+    if (PhysicsHandle == nullptr) {
         UE_LOG(LogTemp, Error, TEXT("%s did not get PhysicsHandle"), *GetOwner()->GetName());
     }
 }
@@ -74,16 +68,10 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 {
     FHitResult Hit;
     FCollisionQueryParams TraceQueryParams(FName(TEXT("")), false, GetOwner());
-    FVector PlayerViewpointLocation;
-    FRotator PlayerViewpointRotation;
-    
-    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-        OUT PlayerViewpointLocation,
-        OUT PlayerViewpointRotation);
     
     GetWorld()->LineTraceSingleByObjectType(
         OUT Hit,
-        PlayerViewpointLocation,
+        GetPlayerViewpointLocation(),
         GetGrabbingPoint(),
         FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
         TraceQueryParams
@@ -102,4 +90,16 @@ FVector UGrabber::GetGrabbingPoint() const
         OUT PlayerViewpointRotation);
 
     return PlayerViewpointLocation + PlayerViewpointRotation.Vector()*Reach;
+}
+
+FVector UGrabber::GetPlayerViewpointLocation() const
+{
+    FVector PlayerViewpointLocation;
+    FRotator PlayerViewpointRotation;
+    
+    GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+        OUT PlayerViewpointLocation,
+        OUT PlayerViewpointRotation);
+
+    return PlayerViewpointLocation;
 }

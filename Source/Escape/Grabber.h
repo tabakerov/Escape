@@ -40,4 +40,5 @@ private:
     void FindInputComponent();
     FHitResult GetFirstPhysicsBodyInReach() const;
     FVector GetGrabbingPoint() const;
+    FVector GetPlayerViewpointLocation() const;
 };
