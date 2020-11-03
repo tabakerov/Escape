@@ -22,8 +22,6 @@ void UOpenDoor::BeginPlay()
 	CurrentYaw = InitialYaw;
 	OpenAngle += InitialYaw;
 
-	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
-
 	if (!PressurePlate) 
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s has the open door component but no pressure plate"), *GetOwner()->GetName());
@@ -67,13 +65,18 @@ float UOpenDoor::TotalMassOfActor() const
 {
     float TotalMass = 0.f;
     
+    
+    if (!PressurePlate) { return TotalMass; }
+
     //Find things within the volume
     TArray<AActor*> OverlapingActors;
+
     PressurePlate->GetOverlappingActors(
                                         OUT OverlapingActors);
 
     for (AActor* Actor : OverlapingActors) {
         TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
     }
+        
     return TotalMass;
 }
