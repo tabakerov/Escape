@@ -28,6 +28,7 @@ public:
 private:
 	float CurrentYaw;
 	float InitialYaw;
+	float DoorLastOpened = 0.f;
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
 
@@ -39,4 +40,7 @@ private:
 
 	UPROPERTY(EditAnywhere);
 	AActor* ActorThatOpens;
+
+	UPROPERTY(EditAnywhere);
+	float DoorCloseDelay = 2.f;
 };
