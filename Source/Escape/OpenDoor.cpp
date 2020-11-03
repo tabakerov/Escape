@@ -3,6 +3,7 @@
 
 #include "OpenDoor.h"
 
+
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
 {
@@ -34,7 +35,7 @@ void UOpenDoor::BeginPlay()
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (PressurePlate && ActorThatOpens && PressurePlate->IsOverlappingActor(ActorThatOpens)) {
+	if (TotalMassOfActor() > OpenMass   ) {
 		OpenDoor(DeltaTime);
 		DoorLastOpened = GetWorld()->GetTimeSeconds();
 	}
@@ -60,4 +61,19 @@ void UOpenDoor::CloseDoor(float DeltaTime)
 
 	Rotator.Yaw = FMath::FInterpTo(Rotator.Yaw, InitialYaw, DeltaTime, DoorCloseSpeed);
 	GetOwner()->SetActorRelativeRotation(Rotator);
+}
+
+float UOpenDoor::TotalMassOfActor() const
+{
+    float TotalMass = 0.f;
+    
+    //Find things within the volume
+    TArray<AActor*> OverlapingActors;
+    PressurePlate->GetOverlappingActors(
+                                        OUT OverlapingActors);
+
+    for (AActor* Actor : OverlapingActors) {
+        TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+    }
+    return TotalMass;
 }

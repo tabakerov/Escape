@@ -26,6 +26,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
+    
+    // Calculate mass of things within the volume
+    float TotalMassOfActor() const;
 
 private:
 	float CurrentYaw;
@@ -34,6 +37,9 @@ private:
 
 	UPROPERTY(EditAnywhere);
 	float OpenAngle = 90.f;
+    
+    UPROPERTY(EditAnywhere);
+    float OpenMass = 40.f;
 
 	UPROPERTY(EditAnywhere);
 	ATriggerVolume* PressurePlate;
